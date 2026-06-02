@@ -31,25 +31,14 @@ Starter kit opinionated untuk membangun aplikasi web modern dengan stack yang su
 
 ## Instalasi
 
-### 1. Clone dan setup otomatis
+### Via Composer (direkomendasikan)
 
 ```bash
-git clone https://github.com/pozzdol/starter-inertia-react.git my-app
+composer create-project pozzdol/starter-inertia-react my-app
 cd my-app
-composer run setup
 ```
 
-Script `setup` akan otomatis menjalankan:
-
-- `composer install`
-- Menyalin `.env.example` ke `.env`
-- Generate `APP_KEY`
-- Menjalankan migrasi database
-- `npm install` dan `npm run build`
-
-### 2. Konfigurasi database
-
-Sesuaikan konfigurasi database di file `.env`:
+Lalu konfigurasi database di `.env`:
 
 ```env
 DB_CONNECTION=pgsql
@@ -60,7 +49,31 @@ DB_USERNAME=postgres
 DB_PASSWORD=password_anda
 ```
 
-### 3. Jalankan development server
+Kemudian jalankan migrasi dan setup frontend:
+
+```bash
+php artisan migrate
+npm install
+npm run build
+```
+
+### Via Git Clone
+
+```bash
+git clone https://github.com/pozzdol/starter-inertia-react.git my-app
+cd my-app
+composer run setup
+```
+
+Script `setup` otomatis menjalankan:
+
+- `composer install`
+- Menyalin `.env.example` ke `.env`
+- Generate `APP_KEY`
+- Menjalankan migrasi database
+- `npm install` dan `npm run build`
+
+## Menjalankan Development Server
 
 ```bash
 composer run dev
@@ -75,7 +88,7 @@ Command ini menjalankan semuanya secara paralel:
 | `php artisan queue:listen` | Queue worker   |
 | `php artisan pail`         | Log viewer     |
 
-Buka [http://localhost:8000](http://localhost:8000).
+Buka http://localhost:8000.
 
 ## Struktur Frontend
 
@@ -91,6 +104,8 @@ resources/js/
 ```
 
 ## Membuat Halaman Baru
+
+Buat file baru di `resources/js/Pages/`:
 
 ```tsx
 // resources/js/Pages/About.tsx
@@ -109,6 +124,31 @@ export default function About() {
 
 `<Head title="About" />` otomatis menghasilkan title `About | AppName` di browser.
 
+## Passing Props dari Controller
+
+```php
+// routes/web.php atau Controller
+Route::get('/about', fn () => inertia('About', [
+    'user' => auth()->user(),
+]));
+```
+
+```tsx
+// resources/js/Pages/About.tsx
+interface Props {
+    user: { name: string; email: string };
+}
+
+export default function About({ user }: Props) {
+    return (
+        <AppLayout>
+            <Head title="About" />
+            <p>Hello, {user.name}</p>
+        </AppLayout>
+    );
+}
+```
+
 ## Testing
 
 ```bash
@@ -124,4 +164,4 @@ php artisan optimize
 
 ## Lisensi
 
-MIT
+MIT — bebas digunakan untuk proyek personal maupun komersial.
